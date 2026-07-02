@@ -1,29 +1,48 @@
 # Laravel SMS Gateway Magfa Driver
 
-Magfa driver package for [`misaf/laravel-sms-gateway`](https://github.com/misaf/laravel-sms-gateway).
+Magfa SMS gateway driver for [`misaf/laravel-sms-gateway`](https://github.com/misaf/laravel-sms-gateway).
 
 ## Installation
 
 ```bash
-composer require misaf/laravel-sms-gateway misaf/laravel-sms-gateway-magfa
+composer require misaf/laravel-sms-gateway-magfa
 ```
 
-Laravel package discovery registers `Misaf\LaravelSmsGatewayMagfa\MagfaSmsGatewayServiceProvider` automatically.
+Laravel package discovery registers the driver service provider automatically.
 
-## Usage
-
-Set the default driver when this provider should be used by default:
+## Configuration
 
 ```env
 SMS_GATEWAY_DRIVER=magfa
+SMS_GATEWAY_MAGFA_USERNAME=your-username
+SMS_GATEWAY_MAGFA_PASSWORD=your-password
 ```
 
-Then configure the provider credentials in `config/services.php` and use the shared facade:
+```php
+// config/services.php
+'magfa' => [
+    'username' => env('SMS_GATEWAY_MAGFA_USERNAME'),
+    'password' => env('SMS_GATEWAY_MAGFA_PASSWORD'),
+],
+```
+
+## Usage
 
 ```php
 use Misaf\LaravelSmsGateway\Facade\SmsGateway;
 
-SmsGateway::driver('magfa')->request();
+$response = SmsGateway::driver('magfa')->send([
+    'to'      => '09123456789',
+    'message' => 'Hello',
+]);
+```
+
+The payload is passed directly to Magfa, so use the fields expected by the Magfa API.
+
+Use `request()` when you need direct access to Laravel's HTTP client:
+
+```php
+$request = SmsGateway::driver('magfa')->request();
 ```
 
 ## Testing
