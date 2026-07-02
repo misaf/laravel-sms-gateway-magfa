@@ -20,11 +20,11 @@ final class MagfaSmsGatewayServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->afterResolving(SmsGatewayManager::class, function (SmsGatewayManager $manager, Application $app): void {
-            $manager->extend('magfa', fn (): MagfaDriver => $app->make(MagfaDriver::class));
+            $manager->extend('magfa', fn(): MagfaDriver => $app->make(MagfaDriver::class));
         });
 
         if ($this->app->bound('sms-gateway')) {
-            $this->app->make('sms-gateway')->extend('magfa', fn (): MagfaDriver => $this->app->make(MagfaDriver::class));
+            $this->app->make('sms-gateway')->extend('magfa', fn(): MagfaDriver => $this->app->make(MagfaDriver::class));
         }
     }
 }
