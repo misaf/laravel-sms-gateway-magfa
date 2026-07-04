@@ -23,8 +23,19 @@ SMS_GATEWAY_MAGFA_PASSWORD=your-password
 'magfa' => [
     'username' => env('SMS_GATEWAY_MAGFA_USERNAME'),
     'password' => env('SMS_GATEWAY_MAGFA_PASSWORD'),
+    'base_url' => env('SMS_GATEWAY_MAGFA_BASE_URL', 'https://sms.magfa.com/api/http/sms/v2/'),
 ],
 ```
+
+## Driver Behavior
+
+| Option | Value |
+| --- | --- |
+| Driver name | `magfa` |
+| Default base URL | `https://sms.magfa.com/api/http/sms/v2/` |
+| `send()` endpoint | `POST send` |
+| Authentication | HTTP Basic auth from `services.magfa.username` and `services.magfa.password` |
+| Payload | JSON data sent directly to Magfa |
 
 ## Usage
 
@@ -32,8 +43,9 @@ SMS_GATEWAY_MAGFA_PASSWORD=your-password
 use Misaf\LaravelSmsGateway\Facade\SmsGateway;
 
 $response = SmsGateway::driver('magfa')->send([
-    'to'      => '09123456789',
-    'message' => 'Hello',
+    'senders'    => ['3000'],
+    'recipients' => ['09123456789'],
+    'messages'   => ['Hello from Magfa'],
 ]);
 ```
 

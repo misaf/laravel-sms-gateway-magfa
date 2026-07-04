@@ -17,13 +17,11 @@ test('can send SMS via Magfa driver', function (): void {
         'https://sms.magfa.com/api/http/sms/v2/send' => Http::response($response, 200),
     ]);
 
-    $result = SmsGateway::driver()->request()
-        ->post('send', [
-            'senders'    => ['3000'],
-            'recipients' => ['09123456789'],
-            'messages'   => ['Hello from Magfa'],
-        ])
-        ->json();
+    $result = SmsGateway::driver()->send([
+        'senders'    => ['3000'],
+        'recipients' => ['09123456789'],
+        'messages'   => ['Hello from Magfa'],
+    ])->json();
 
     Http::assertSent(function (Request $request): bool {
         return 'https://sms.magfa.com/api/http/sms/v2/send' === $request->url()
@@ -35,4 +33,21 @@ test('can send SMS via Magfa driver', function (): void {
     });
 
     expect($result)->toEqual($response);
+});
+
+test('prefers the base URL configured in services over the driver default', function (): void {
+    config()->set('sms_gateway.default', 'magfa');
+    config()->set('services.magfa.base_url', 'https://services-override.example.test/');
+
+    Http::fake([
+        'https://services-override.example.test/*' => Http::response(['status' => 0], 200),
+    ]);
+
+    SmsGateway::driver()->send([
+        'messages' => ['Hello'],
+    ]);
+
+    Http::assertSent(function (Request $request): bool {
+        return 'https://services-override.example.test/send' === $request->url();
+    });
 });

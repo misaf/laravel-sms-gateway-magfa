@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Misaf\LaravelSmsGatewayMagfa\Drivers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Misaf\LaravelSmsGateway\SmsGatewayDriver;
 
 final class MagfaDriver extends SmsGatewayDriver
 {
-    protected function driverName(): string
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function send(array $data): Response
     {
-        return 'magfa';
+        return $this->request()->post('send', $data);
     }
 
-    protected function defaultGateway(): string
+    protected function defaultBaseUrl(): string
     {
         return 'https://sms.magfa.com/api/http/sms/v2/';
     }
@@ -22,8 +26,7 @@ final class MagfaDriver extends SmsGatewayDriver
     protected function configureRequest(PendingRequest $request): PendingRequest
     {
         return $request
-            ->withBasicAuth($this->serviceConfigString('username'), $this->serviceConfigString('password'))
-            ->acceptJson()
-            ->asJson();
+            ->withBasicAuth($this->driverConfig('username'), $this->driverConfig('password'))
+            ->acceptJson();
     }
 }
