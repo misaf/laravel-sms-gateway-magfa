@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Misaf\LaravelSmsGatewayMagfa\Drivers;
+namespace Misaf\LaravelSmsGatewayMagfa;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;

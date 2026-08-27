@@ -18,13 +18,22 @@ SMS_GATEWAY_MAGFA_USERNAME=your-username
 SMS_GATEWAY_MAGFA_PASSWORD=your-password
 ```
 
+Publish the config file if you want to edit it directly:
+
+```bash
+php artisan vendor:publish --tag=sms-gateway-magfa-config
+```
+
 ```php
-// config/services.php
-'magfa' => [
+<?php
+
+declare(strict_types=1);
+
+return [
     'username' => env('SMS_GATEWAY_MAGFA_USERNAME'),
     'password' => env('SMS_GATEWAY_MAGFA_PASSWORD'),
-    'base_url' => env('SMS_GATEWAY_MAGFA_BASE_URL', 'https://sms.magfa.com/api/http/sms/v2/'),
-],
+    'base_url' => env('SMS_GATEWAY_MAGFA_BASE_URL'),
+];
 ```
 
 ## Driver Behavior
@@ -34,18 +43,18 @@ SMS_GATEWAY_MAGFA_PASSWORD=your-password
 | Driver name | `magfa` |
 | Default base URL | `https://sms.magfa.com/api/http/sms/v2/` |
 | `send()` endpoint | `POST send` |
-| Authentication | HTTP Basic auth from `services.magfa.username` and `services.magfa.password` |
+| Authentication | HTTP Basic auth from `laravel-sms-gateway-magfa.username` and `laravel-sms-gateway-magfa.password` |
 | Payload | JSON data sent directly to Magfa |
 
 ## Usage
 
 ```php
-use Misaf\LaravelSmsGateway\Facade\SmsGateway;
+use Misaf\LaravelSmsGateway\Facades\SmsGateway;
 
 $response = SmsGateway::driver('magfa')->send([
-    'senders'    => ['3000'],
+    'senders'   => ['3000'],
     'recipients' => ['09123456789'],
-    'messages'   => ['Hello from Magfa'],
+    'messages'  => ['Hello from Magfa'],
 ]);
 ```
 
@@ -57,12 +66,13 @@ Use `request()` when you need direct access to Laravel's HTTP client:
 $request = SmsGateway::driver('magfa')->request();
 ```
 
-## Testing
+## Development
 
-```bash
-composer test
-composer analyse
-```
+This package is developed in the
+[`misaf/laravel-sms-gateway`](https://github.com/misaf/laravel-sms-gateway)
+monorepo at `src/Drivers/laravel-sms-gateway-magfa` and split out here on release. Open issues and
+pull requests against the monorepo; run `composer test` and `composer analyse`
+from its root.
 
 ## License
 

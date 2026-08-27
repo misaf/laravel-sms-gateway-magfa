@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
-use Misaf\LaravelSmsGateway\Facade\SmsGateway;
+use Misaf\LaravelSmsGateway\Facades\SmsGateway;
 
 test('can send SMS via Magfa driver', function (): void {
-    config()->set('sms_gateway.default', 'magfa');
-    config()->set('services.magfa.username', 'magfa-username');
-    config()->set('services.magfa.password', 'magfa-password');
+    config()->set('laravel-sms-gateway.default', 'magfa');
+    config()->set('laravel-sms-gateway-magfa.username', 'magfa-username');
+    config()->set('laravel-sms-gateway-magfa.password', 'magfa-password');
 
     $response = ['status' => 0, 'messages' => [['id' => 123]]];
 
@@ -35,9 +35,9 @@ test('can send SMS via Magfa driver', function (): void {
     expect($result)->toEqual($response);
 });
 
-test('prefers the base URL configured in services over the driver default', function (): void {
-    config()->set('sms_gateway.default', 'magfa');
-    config()->set('services.magfa.base_url', 'https://services-override.example.test/');
+test('prefers the base URL configured in the driver config over the driver default', function (): void {
+    config()->set('laravel-sms-gateway.default', 'magfa');
+    config()->set('laravel-sms-gateway-magfa.base_url', 'https://services-override.example.test/');
 
     Http::fake([
         'https://services-override.example.test/*' => Http::response(['status' => 0], 200),
