@@ -5,11 +5,24 @@ declare(strict_types=1);
 namespace Misaf\LaravelSmsGatewayMagfa;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
-use Misaf\LaravelSmsGateway\SmsGatewayDriver;
+use Illuminate\Support\Facades\Http;
+use Misaf\LaravelSmsGateway\Contracts\SmsGateway;
+use Misaf\LaravelSmsGateway\Events\SmsSent;
 
-final class MagfaDriver extends SmsGatewayDriver
+final class MagfaDriver implements SmsGateway
 {
+    private const string DEFAULT_BASE_URL = 'https://sms.magfa.com/api/http/sms/v2/';
+
+    public function __construct(
+        private readonly string $username = '',
+        private readonly string $password = '',
+        private readonly string $baseUrl = '',
+        private readonly int $timeout = 10,
+        private readonly int $connectTimeout = 5,
+    ) {}
+
     /**
      * @param array<string, mixed> $data
      */
@@ -18,15 +31,17 @@ final class MagfaDriver extends SmsGatewayDriver
         return $this->request()->post('send', $data);
     }
 
-    protected function defaultBaseUrl(): string
+    public function request(): PendingRequest
     {
-        return 'https://sms.magfa.com/api/http/sms/v2/';
-    }
+        return Http::baseUrl('' !== $this->baseUrl ? $this->baseUrl : self::DEFAULT_BASE_URL)
+            ->timeout($this->timeout)
+            ->connectTimeout($this->connectTimeout)
+            ->withBasicAuth($this->username, $this->password)
+            ->acceptJson()
+            ->afterResponse(function (Response $response, Request $request): Response {
+                SmsSent::dispatch('magfa', $request, $response);
 
-    protected function configureRequest(PendingRequest $request): PendingRequest
-    {
-        return $request
-            ->withBasicAuth($this->driverConfig('username'), $this->driverConfig('password'))
-            ->acceptJson();
+                return $response;
+            });
     }
 }

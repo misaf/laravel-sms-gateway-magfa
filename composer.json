@@ -1,6 +1,6 @@
 {
     "name": "misaf/laravel-sms-gateway-magfa",
-    "description": "Magfa SMS gateway driver for Laravel.",
+    "description": "Magfa SMS gateway driver for Laravel SMS Gateway.",
     "license": "MIT",
     "type": "library",
     "keywords": [
